@@ -362,36 +362,7 @@
       <div class="captcha-card">
         <p class="captcha-prompt">Select all images of Jon Hamm</p>
         <div class="captcha-grid" id="captchaGrid">
-          <!-- Row 1: other guy, Jon Hamm (hamm2), ambiguous -->
-          <div class="captcha-cell" data-index="0" data-correct="false">
-            <img src="hamm1.jpg" alt="" />
-          </div>
-          <div class="captcha-cell" data-index="1" data-correct="true">
-            <img src="hamm2.jpg" alt="" />
-          </div>
-          <div class="captcha-cell" data-index="2" data-correct="false">
-            <img src="hamm3.jpg" alt="" />
-          </div>
-          <!-- Row 2: adjacent lookalike, Jon Hamm (hamm5), other -->
-          <div class="captcha-cell" data-index="3" data-correct="false">
-            <img src="hamm4.jpg" alt="" />
-          </div>
-          <div class="captcha-cell" data-index="4" data-correct="true">
-            <img src="hamm5.jpg" alt="" />
-          </div>
-          <div class="captcha-cell" data-index="5" data-correct="false">
-            <img src="hamm6.jpg" alt="" />
-          </div>
-          <!-- Row 3: ambiguous, Jon Hamm (hamm8), wrong answer -->
-          <div class="captcha-cell" data-index="6" data-correct="false">
-            <img src="hamm7.jpg" alt="" />
-          </div>
-          <div class="captcha-cell" data-index="7" data-correct="true">
-            <img src="hamm8.jpg" alt="" />
-          </div>
-          <div class="captcha-cell" data-index="8" data-correct="false">
-            <img src="hamm9.jpg" alt="" />
-          </div>
+          <!-- Grid cells populated by script (shuffled) -->
         </div>
         <button type="button" class="btn-verify" id="btnVerify">Verify</button>
         <p class="captcha-fun-msg" id="captchaFunMsg" aria-live="polite"></p>
@@ -428,15 +399,59 @@
       const btnVerify = document.getElementById("btnVerify");
       const captchaFunMsg = document.getElementById("captchaFunMsg");
 
+      // All 9 images: jon_hamm prefix = correct (Jon Hamm), others = distractors
+      const captchaImages = [
+        { src: "images/jon_hamm/christopher_meloni.jpeg", correct: false },
+        { src: "images/jon_hamm/john_wick.webp", correct: false },
+        { src: "images/jon_hamm/jon_hamm.jpg", correct: true },
+        { src: "images/jon_hamm/jon_hamm2.jpg", correct: true },
+        { src: "images/jon_hamm/jon_hamm3.webp", correct: true },
+        { src: "images/jon_hamm/jon_hamm4.webp", correct: true },
+        { src: "images/jon_hamm/matt_bomer.webp", correct: false },
+        { src: "images/jon_hamm/matthew.webp", correct: false },
+        { src: "images/jon_hamm/more_matthew.webp", correct: false },
+      ];
+
+      function shuffle(array) {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      const shuffledImages = shuffle(captchaImages);
+      const correctIndices = shuffledImages
+        .map(function (img, i) {
+          return img.correct ? i : -1;
+        })
+        .filter(function (i) {
+          return i >= 0;
+        });
+
+      captchaGrid.innerHTML = shuffledImages
+        .map(
+          function (img, i) {
+            return (
+              '<div class="captcha-cell" data-index="' +
+              i +
+              '" data-correct="' +
+              img.correct +
+              '"><img src="' +
+              img.src +
+              '" alt="" /></div>'
+            );
+          }
+        )
+        .join("");
+
       // Toggle selection when a grid cell is clicked
       captchaGrid.addEventListener("click", function (e) {
         const cell = e.target.closest(".captcha-cell");
         if (!cell) return;
         cell.classList.toggle("selected");
       });
-
-      // Which indices are "correct" (Jon Hamm) for perfect-selection detection
-      const correctIndices = [1, 4, 7];
 
       function isPerfectSelection() {
         const selected = captchaGrid.querySelectorAll(".captcha-cell.selected");
