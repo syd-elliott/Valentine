@@ -470,19 +470,17 @@
         });
 
       captchaGrid.innerHTML = shuffledImages
-        .map(
-          function (img, i) {
-            return (
-              '<div class="captcha-cell" data-index="' +
-              i +
-              '" data-correct="' +
-              img.correct +
-              '"><img src="' +
-              img.src +
-              '" alt="" /></div>'
-            );
-          }
-        )
+        .map(function (img, i) {
+          return (
+            '<div class="captcha-cell" data-index="' +
+            i +
+            '" data-correct="' +
+            img.correct +
+            '"><img src="' +
+            img.src +
+            '" alt="" /></div>'
+          );
+        })
         .join("");
 
       // Toggle selection when a grid cell is clicked
@@ -508,9 +506,11 @@
       }
 
       function clearCaptchaSelection() {
-        captchaGrid.querySelectorAll(".captcha-cell.selected").forEach(function (cell) {
-          cell.classList.remove("selected");
-        });
+        captchaGrid
+          .querySelectorAll(".captcha-cell.selected")
+          .forEach(function (cell) {
+            cell.classList.remove("selected");
+          });
       }
 
       function showValentineScreen() {
@@ -535,7 +535,8 @@
 
           var correctCount = countCorrectSelected();
           if (correctCount <= 1) {
-            captchaFunMsg.textContent = "Try again! Select all images of Jon Hamm.";
+            captchaFunMsg.textContent =
+              "Try again! Select all images of Jon Hamm.";
             captchaFunMsg.classList.add("show");
             clearCaptchaSelection();
           } else if (isPerfectSelection()) {
@@ -544,7 +545,7 @@
             captchaFunMsg.classList.add("show");
             setTimeout(showValentineScreen, 2200);
           } else {
-            captchaFunMsg.textContent = "Verified!";
+            captchaFunMsg.textContent = "Eh, close enough ;)";
             captchaFunMsg.classList.add("show");
             setTimeout(showValentineScreen, 800);
           }
@@ -587,7 +588,8 @@
 
         for (let i = 0; i < count; i++) {
           const heart = document.createElement("span");
-          heart.className = "heart " + (Math.random() > 0.5 ? "float-up" : "float-down");
+          heart.className =
+            "heart " + (Math.random() > 0.5 ? "float-up" : "float-down");
           heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
           heart.style.left = Math.random() * 100 + "%";
           heart.style.top = Math.random() * 100 + "%";
