@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Will you be my Valentine? 💕</title>
+    <title>Valentine</title>
+    <link rel="icon" type="image/png" href="heart.png" />
     <style>
       /* --- Variables & reset --- */
       :root {
@@ -23,6 +24,10 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+      }
+
+      html {
+        overflow-x: hidden;
       }
 
       body {
@@ -96,6 +101,8 @@
         align-items: center;
         justify-content: center;
         transition: transform 0.3s ease;
+        text-align: center;
+        word-wrap: break-word;
       }
 
       .question.celebrate {
@@ -118,15 +125,13 @@
 
       /* --- Buttons container --- */
       .buttons {
-        position: relative;
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
+        flex-wrap: nowrap;
         justify-content: center;
+        align-items: center;
+        gap: 16px;
+        height: 80px;
         transition: opacity 0.4s ease;
-        min-height: 52px;
       }
 
       .buttons.hidden {
@@ -142,8 +147,8 @@
         font-weight: 600;
         cursor: pointer;
         padding: 14px 28px;
-        transition: transform 0.25s ease, box-shadow 0.25s ease,
-          padding 0.3s ease, font-size 0.3s ease;
+        flex-shrink: 0;
+        transition: transform 0.3s ease, box-shadow 0.25s ease;
         font-family: inherit;
       }
 
@@ -167,6 +172,7 @@
         background: #f5f5f5;
         color: var(--neutral-dark);
         border: 1px solid #e0e0e0;
+        flex-shrink: 0;
       }
 
       .btn-no:hover {
@@ -365,18 +371,25 @@
       }
 
       /* --- Responsive --- */
+      @media (max-width: 600px) {
+        .card {
+          width: 90%;
+          max-width: 100%;
+        }
+        .captcha-card {
+          width: 90%;
+          max-width: 100%;
+        }
+      }
+
       @media (max-width: 380px) {
         .card {
           padding: 1.5rem;
-        }
-        .buttons {
-          flex-direction: column;
-        }
-        .btn {
-          width: 100%;
+          width: 95%;
         }
         .captcha-card {
           padding: 1.5rem;
+          width: 95%;
         }
       }
     </style>
@@ -618,14 +631,10 @@
         btnNo.textContent =
           noPhrases[Math.min(noClickCount - 1, noPhrases.length - 1)];
 
-        // Grow the Yes button slowly so it never overlaps No
-        yesScale += 0.12;
-        const scale = Math.min(yesScale, 1.8);
+        // Grow the Yes button slowly using scale only (+0.15 per click, cap ~3)
+        yesScale += 0.15;
+        var scale = Math.min(yesScale, 3);
         btnYes.style.transform = "scale(" + scale + ")";
-        btnYes.style.padding =
-          14 + Math.min(noClickCount, 6) * 2 + "px " +
-          (28 + Math.min(noClickCount, 6) * 4) + "px";
-        btnYes.style.fontSize = (1 + Math.min(noClickCount, 6) * 0.05) + "rem";
 
         // After the last phrase, hide the No button
         if (noClickCount >= noPhrases.length) {
