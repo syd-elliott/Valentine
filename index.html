@@ -516,6 +516,7 @@
 
           var correctCount = countCorrectSelected();
           if (correctCount <= 1) {
+            btnVerify.textContent = "Verify";
             captchaFunMsg.textContent = "Mmmm wrong, try again!";
             captchaFunMsg.classList.add("show");
             clearCaptchaSelection();
@@ -556,8 +557,8 @@
       let yesMessageIndex = 0;
 
       const originalGif = "images/valentines-day-funny-gif.gif";
-      /** Celebration gif when Yes is selected (add valentines-celebration.gif to images/ for a different gif) */
-      const celebrationGif = "images/valentines-celebration.gif";
+      /** Celebration gif when Yes is selected */
+      const celebrationGif = "images/sally.gif";
 
       /**
        * Spawn floating hearts across the full screen
