@@ -177,13 +177,21 @@
         height: 100%;
         pointer-events: none;
         z-index: 100;
+        overflow: hidden;
       }
 
       .heart {
         position: absolute;
         font-size: 24px;
-        animation: floatUp 2.5s ease-out forwards;
         opacity: 0.9;
+      }
+
+      .heart.float-up {
+        animation: floatUp 2.5s ease-out forwards;
+      }
+
+      .heart.float-down {
+        animation: floatDown 2.5s ease-out forwards;
       }
 
       @keyframes floatUp {
@@ -195,6 +203,36 @@
           transform: translateY(-100vh) scale(1.2);
           opacity: 0;
         }
+      }
+
+      @keyframes floatDown {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 0.9;
+        }
+        100% {
+          transform: translateY(100vh) scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      /* Yes-selected state: celebration gif expands to fullscreen */
+      .card.celebrate-mode .gif-placeholder {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        aspect-ratio: auto;
+        margin: 0;
+        border-radius: 0;
+        z-index: 50;
+        transition: all 0.5s ease-out;
+      }
+
+      .card.celebrate-mode .gif-placeholder img {
+        border-radius: 0;
       }
 
       /* --- CAPTCHA intro screen --- */
@@ -373,8 +411,9 @@
     <div class="screen screen-valentine hidden" id="screenValentine">
       <div class="card">
         <!-- Placeholder for your GIF: replace src with your GIF URL -->
-        <div class="gif-placeholder">
+        <div class="gif-placeholder" id="gifPlaceholder">
           <img
+            id="mainGif"
             src="images/valentines-day-funny-gif.gif"
             alt="Valentine's Day"
           />
@@ -453,11 +492,24 @@
         cell.classList.toggle("selected");
       });
 
+      function countCorrectSelected() {
+        const selected = captchaGrid.querySelectorAll(".captcha-cell.selected");
+        return [...selected].filter(function (cell) {
+          return correctIndices.includes(parseInt(cell.dataset.index, 10));
+        }).length;
+      }
+
       function isPerfectSelection() {
         const selected = captchaGrid.querySelectorAll(".captcha-cell.selected");
         if (selected.length !== correctIndices.length) return false;
         return [...selected].every(function (cell) {
           return correctIndices.includes(parseInt(cell.dataset.index, 10));
+        });
+      }
+
+      function clearCaptchaSelection() {
+        captchaGrid.querySelectorAll(".captcha-cell.selected").forEach(function (cell) {
+          cell.classList.remove("selected");
         });
       }
 
@@ -481,9 +533,14 @@
           btnVerify.classList.remove("verifying");
           btnVerify.disabled = false;
 
-          if (isPerfectSelection()) {
+          var correctCount = countCorrectSelected();
+          if (correctCount <= 1) {
+            captchaFunMsg.textContent = "Try again! Select all images of Jon Hamm.";
+            captchaFunMsg.classList.add("show");
+            clearCaptchaSelection();
+          } else if (isPerfectSelection()) {
             captchaFunMsg.textContent =
-              "Wait… you actually know what Jon Hamm looks like??";
+              "Hold on… since when do you know what Jon Hamm looks like??";
             captchaFunMsg.classList.add("show");
             setTimeout(showValentineScreen, 2200);
           } else {
@@ -517,36 +574,52 @@
       const yesMessages = ["YAYYYY 💖🥰", "I knew it!!! 💕"];
       let yesMessageIndex = 0;
 
+      const originalGif = "images/valentines-day-funny-gif.gif";
+      /** Celebration gif when Yes is selected (add valentines-celebration.gif to images/ for a different gif) */
+      const celebrationGif = "images/valentines-celebration.gif";
+
       /**
-       * Spawn floating hearts for celebration effect
+       * Spawn floating hearts across the full screen
        */
       function spawnHearts() {
         const hearts = ["💕", "💖", "❤️", "💗", "🥰"];
-        const count = 20;
+        const count = 40;
 
         for (let i = 0; i < count; i++) {
           const heart = document.createElement("span");
-          heart.className = "heart";
+          heart.className = "heart " + (Math.random() > 0.5 ? "float-up" : "float-down");
           heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
           heart.style.left = Math.random() * 100 + "%";
+          heart.style.top = Math.random() * 100 + "%";
           heart.style.animationDelay = Math.random() * 0.8 + "s";
           heart.style.fontSize = 16 + Math.random() * 24 + "px";
           heartsContainer.appendChild(heart);
 
-          // Remove after animation
-          setTimeout(() => heart.remove(), 2800);
+          setTimeout(function () {
+            heart.remove();
+          }, 2800);
         }
       }
 
       /**
-       * Handle Yes button click: celebrate and update message
+       * Handle Yes button click: swap gif, expand to fullscreen, celebrate
        */
       function onYesClick() {
         questionEl.textContent =
           yesMessages[yesMessageIndex % yesMessages.length];
         questionEl.classList.add("celebrate");
-        spawnHearts();
         buttonsEl.classList.add("hidden");
+
+        var mainGif = document.getElementById("mainGif");
+        var gifPlaceholder = document.getElementById("gifPlaceholder");
+        var card = gifPlaceholder.closest(".card");
+
+        mainGif.src = celebrationGif;
+        mainGif.onerror = function () {
+          mainGif.src = originalGif;
+        };
+        card.classList.add("celebrate-mode");
+        spawnHearts();
       }
 
       /**
