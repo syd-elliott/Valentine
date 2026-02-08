@@ -125,10 +125,16 @@
 
       /* --- Buttons container --- */
       .buttons {
-        position: relative;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-items: stretch;
+        gap: 16px;
+        min-height: 80px;
         width: 100%;
-        height: 70px;
-        margin-top: 10px;
+        padding: 0 1rem;
+        max-width: 100%;
+        transition: opacity 0.4s ease;
       }
 
       .buttons.hidden {
@@ -138,27 +144,17 @@
 
       /* --- Yes button --- */
       .btn {
-        position: absolute;
-        top: 0;
-        height: 100%;
-        padding: 14px 24px;
+        border: none;
         border-radius: 999px;
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
-        transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-          box-shadow 0.25s ease, left 0.35s ease, right 0.35s ease,
-          width 0.35s ease, background 0.2s ease;
-      }
-
-      .btn-yes {
-        left: 0;
-        width: 48%;
-      }
-
-      .btn-no {
-        right: 0;
-        width: 48%;
+        padding: 14px 28px;
+        flex: 1 1 0;
+        min-width: 0;
+        transition: transform 0.3s ease, box-shadow 0.25s ease,
+          flex-grow 0.3s ease;
+        font-family: inherit;
       }
 
       .btn-yes {
@@ -187,26 +183,9 @@
         min-width: 0;
       }
 
-      .btn-no {
-        right: auto;
-        left: 52%;
-        width: 48%;
-      }
-
       .btn-no:hover {
         background: #eeeeee;
         transform: scale(1.02);
-      }
-
-      .btn-yes:active {
-        transform: scale(0.95);
-      }
-
-      .btn-yes.big {
-        width: 100% !important;
-        left: 0 !important;
-        font-size: 1.3rem;
-        box-shadow: 0 10px 40px rgba(233, 30, 99, 0.6);
       }
 
       /* --- Hearts / confetti overlay --- */
@@ -543,19 +522,6 @@
           });
       }
 
-      function onYesClick() {
-        btnYes.classList.add("big");
-
-        questionEl.textContent = "Correct choice 😌💕";
-        questionEl.classList.add("celebrate");
-        buttonsEl.classList.add("hidden");
-
-        const mainGif = document.getElementById("mainGif");
-        mainGif.src = celebrationGif;
-
-        spawnHearts();
-      }
-
       function showValentineScreen() {
         screenCaptcha.classList.add("hidden");
         screenValentine.classList.remove("hidden");
@@ -669,51 +635,27 @@
       /**
        * Handle No button click: cycle phrase and grow Yes button
        */
-      function expandYes() {
-        const stages = [
-          { width: 55, shift: 0 },
-          { width: 65, shift: 5 },
-          { width: 75, shift: 10 },
-          { width: 85, shift: 15 },
-          { width: 95, shift: 20 },
-          { width: 100, shift: 25 },
-        ];
-
-        const stage = stages[Math.min(noClickCount - 1, stages.length - 1)];
-
-        btnYes.style.width = stage.width + "%";
-        btnNo.style.transform = `translateX(${stage.shift}px)`;
-      }
-
-      function moveNoRandomly() {
-        const card = document.querySelector(".card").getBoundingClientRect();
-
-        const maxX = card.width - btnNo.offsetWidth;
-        const maxY = 60;
-
-        const randomX = Math.random() * maxX;
-        const randomY = Math.random() * maxY;
-
-        btnNo.style.left = randomX + "px";
-        btnNo.style.top = randomY + "px";
-      }
-
       function onNoClick() {
         noClickCount++;
-
         btnNo.textContent =
           noPhrases[Math.min(noClickCount - 1, noPhrases.length - 1)];
 
-        expandYes();
+        // Grow the Yes button slowly using scale only (+0.15 per click, cap ~3)
+        yesScale += 0.15;
+        var scale = Math.min(yesScale, 3);
+        btnYes.style.transform = "scale(" + scale + ")";
 
-        // After enough clicks, No tries to escape
-        if (noClickCount >= 5) {
-          moveNoRandomly();
-        }
+        // Shift flex ratio: Yes gets bigger share, No gets smaller
+        var yesGrow = 1 + noClickCount * 0.25;
+        var noGrow = Math.max(0.4, 1 - noClickCount * 0.15);
+        btnYes.style.flexGrow = yesGrow;
+        btnNo.style.flexGrow = noGrow;
 
-        if (noClickCount >= 8) {
-          btnNo.style.opacity = "0";
-          btnNo.style.pointerEvents = "none";
+        // After the last phrase, hide the No button
+        if (noClickCount >= noPhrases.length) {
+          btnNo.style.display = "none";
+        } else if (noClickCount >= noPhrases.length - 1) {
+          btnNo.style.opacity = "0.7";
         }
       }
 
