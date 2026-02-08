@@ -120,13 +120,13 @@
       .buttons {
         position: relative;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 12px;
         align-items: center;
         justify-content: center;
         transition: opacity 0.4s ease;
         min-height: 52px;
-        width: 100%;
       }
 
       .buttons.hidden {
@@ -618,22 +618,20 @@
         btnNo.textContent =
           noPhrases[Math.min(noClickCount - 1, noPhrases.length - 1)];
 
-        // Grow the Yes button (scale + padding so it dominates the space)
-        yesScale += 0.35;
-        const scale = Math.min(yesScale, 3);
-        btnYes.style.transform = `scale(${scale})`;
-        btnYes.style.padding = `${14 + Math.min(noClickCount, 4) * 4}px ${
-          28 + Math.min(noClickCount, 4) * 8
-        }px`;
-        btnYes.style.fontSize = `${1 + Math.min(noClickCount, 4) * 0.15}rem`;
+        // Grow the Yes button slowly so it never overlaps No
+        yesScale += 0.12;
+        const scale = Math.min(yesScale, 1.8);
+        btnYes.style.transform = "scale(" + scale + ")";
+        btnYes.style.padding =
+          14 + Math.min(noClickCount, 6) * 2 + "px " +
+          (28 + Math.min(noClickCount, 6) * 4) + "px";
+        btnYes.style.fontSize = (1 + Math.min(noClickCount, 6) * 0.05) + "rem";
 
-        // After several clicks, No button gets smaller and fades (but stays in layout, no overlap)
-        if (noClickCount >= 4) {
-          btnNo.style.transform = "scale(0.85)";
+        // After the last phrase, hide the No button
+        if (noClickCount >= noPhrases.length) {
+          btnNo.style.display = "none";
+        } else if (noClickCount >= noPhrases.length - 1) {
           btnNo.style.opacity = "0.7";
-        }
-        if (noClickCount >= 5) {
-          btnNo.style.opacity = "0.5";
         }
       }
 
