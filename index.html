@@ -130,7 +130,7 @@
         justify-content: center;
         align-items: center;
         gap: 16px;
-        height: 80px;
+        min-height: 80px;
         transition: opacity 0.4s ease;
       }
 
@@ -173,6 +173,9 @@
         color: var(--neutral-dark);
         border: 1px solid #e0e0e0;
         flex-shrink: 0;
+        white-space: normal;
+        text-align: center;
+        max-width: 180px;
       }
 
       .btn-no:hover {
@@ -372,12 +375,15 @@
 
       /* --- Responsive --- */
       @media (max-width: 600px) {
+        .screen {
+          padding: 0;
+        }
         .card {
-          width: 90%;
+          width: 100%;
           max-width: 100%;
         }
         .captcha-card {
-          width: 90%;
+          width: 100%;
           max-width: 100%;
         }
       }
@@ -385,11 +391,9 @@
       @media (max-width: 380px) {
         .card {
           padding: 1.5rem;
-          width: 95%;
         }
         .captcha-card {
           padding: 1.5rem;
-          width: 95%;
         }
       }
     </style>
