@@ -132,6 +132,8 @@
         gap: 16px;
         min-height: 80px;
         width: 100%;
+        padding: 0 1rem;
+        max-width: 100%;
         transition: opacity 0.4s ease;
       }
 
@@ -150,7 +152,8 @@
         padding: 14px 28px;
         flex: 1 1 0;
         min-width: 0;
-        transition: transform 0.3s ease, box-shadow 0.25s ease;
+        transition: transform 0.3s ease, box-shadow 0.25s ease,
+          flex-grow 0.3s ease;
         font-family: inherit;
       }
 
@@ -448,7 +451,7 @@
       const captchaImages = [
         { src: "images/jon_hamm/christopher_meloni.jpeg", correct: false },
         { src: "images/jon_hamm/john_wick.webp", correct: false },
-        { src: "images/jon_hamm/jon_hamm.jpg", correct: true },
+        { src: "images/jon_hamm/jon_hamm5.jpg", correct: true },
         { src: "images/jon_hamm/jon_hamm2.jpg", correct: true },
         { src: "images/jon_hamm/jon_hamm3.webp", correct: true },
         { src: "images/jon_hamm/jon_hamm4.webp", correct: true },
@@ -641,6 +644,12 @@
         yesScale += 0.15;
         var scale = Math.min(yesScale, 3);
         btnYes.style.transform = "scale(" + scale + ")";
+
+        // Shift flex ratio: Yes gets bigger share, No gets smaller
+        var yesGrow = 1 + noClickCount * 0.25;
+        var noGrow = Math.max(0.4, 1 - noClickCount * 0.15);
+        btnYes.style.flexGrow = yesGrow;
+        btnNo.style.flexGrow = noGrow;
 
         // After the last phrase, hide the No button
         if (noClickCount >= noPhrases.length) {
