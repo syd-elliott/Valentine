@@ -132,8 +132,8 @@
         gap: 16px;
         min-height: 80px;
         width: 100%;
-        padding: 0 1rem;
         max-width: 100%;
+        overflow: hidden;
         transition: opacity 0.4s ease;
       }
 
@@ -181,6 +181,9 @@
         text-align: center;
         flex: 1 1 0;
         min-width: 0;
+        container-type: inline-size;
+        font-size: clamp(0.65rem, 5cqw, 1rem);
+        transition: flex-grow 0.3s ease, font-size 0.2s ease;
       }
 
       .btn-no:hover {
@@ -645,9 +648,9 @@
         var scale = Math.min(yesScale, 3);
         btnYes.style.transform = "scale(" + scale + ")";
 
-        // Shift flex ratio: Yes gets bigger share, No gets smaller
-        var yesGrow = 1 + noClickCount * 0.25;
-        var noGrow = Math.max(0.4, 1 - noClickCount * 0.15);
+        // Shift flex ratio: Yes gets bigger share, No shrinks slower
+        var yesGrow = 1 + noClickCount * 0.2;
+        var noGrow = Math.max(0.5, 1 - noClickCount * 0.08);
         btnYes.style.flexGrow = yesGrow;
         btnNo.style.flexGrow = noGrow;
 
