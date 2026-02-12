@@ -658,6 +658,7 @@
 
         // 2. Apply limits (Cap the growth so it doesn't break the layout)
         if (noClickCount <= 8) {
+          btnYes.style.lineHeight = "1";
           btnYes.style.padding = newPaddingV + "px " + newPaddingH + "px";
           btnYes.style.fontSize = newFontSize + "rem";
         }
